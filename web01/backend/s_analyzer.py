@@ -1,14 +1,14 @@
 import json
 import threading 
 import redis_connector as redis
-#import get_ip_source
+import get_ip_source
 
 def handle(fname):
 	f = file(fname)
 	hour_end_time = float(f.readline().split()[0]) + 3600 
 	ip_hour_dic = { hour_end_time : {'total_pv': 0 }  }
 	uv_dic = {}
-	region_dic = {}
+	region_ip_dic = {}
 	cache_type_dic = {}
 	for line in f.xreadlines():
 		line = line.split()
@@ -28,10 +28,10 @@ def handle(fname):
 		#handle region ranking 
 		internet_ip, intranet_ip = raw_ip.split('/')
 		region_ip = '.'.join(internet_ip.split('.')[:2])
-		if region_dic.has_key(region_ip):
-			region_dic[region_ip][0] += 1
+		if region_ip_dic.has_key(region_ip):
+			region_ip_dic[region_ip][0] += 1
 		else :
-			region_dic[region_ip] = [1, internet_ip]
+			region_ip_dic[region_ip] = [1, internet_ip]
 		#handle squid request status
 		cache_type = cache_type.split('/')[0] 
 		if cache_type_dic.has_key(cache_type):
@@ -44,8 +44,8 @@ def handle(fname):
 	#print len(uv_dic)
 	#print 'InternetIP : ', len(region_dic)
 	#print 'Cache types:', cache_type_dic
-	sorted_region_list = sorted(region_dic.items(), key=lambda x:x[1][0], reverse=True)[:100]
-	for i in sorted_region_list:
+	sorted_region_ip_list = sorted(region_ip_dic.items(), key=lambda x:x[1][0], reverse=True)[:100]
+	for i in sorted_region_ip_list:
 		#get all regions
 		url = 'http://ip.taobao.com/service/getIpInfo.php?ip=%s' % i[1][1] 
 		p=threading.Thread(target=get_ip_source.get_region, args=(url,) )
@@ -53,9 +53,11 @@ def handle(fname):
 
 	result_dic = {
 		'ip_hour_dic' : ip_hour_dic,
-		'cache_type_dic': cache_type_dic
+		'cache_type_dic': cache_type_dic,
+                'province_dic': get_ip_source.province_dic
 	}
 
+        print result_dic['province_dic']
 	return result_dic
 
 
