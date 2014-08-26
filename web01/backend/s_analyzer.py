@@ -1,7 +1,25 @@
-import json
-import threading 
+import json,urllib2
+import threading,time
 import redis_connector as redis
-import get_ip_source
+#import get_ip_source # I have moved the function to this file
+
+province_dic={}
+
+def get_region(url):
+	#res = urllib2.Request(url)
+        global province_dic
+	result = urllib2.urlopen(url)
+	region_dic = json.loads(result.read())
+        #print province_dic
+        #print region_dic
+        #province = region_dic['data']['city']
+        province = region_dic['province']
+        print province
+	if province_dic.has_key(province):
+		province_dic[province] +=1
+	else:
+		province_dic[province] = 1
+        #print region_dic
 
 def handle(fname):
 	f = file(fname)
@@ -44,24 +62,40 @@ def handle(fname):
 	#print len(uv_dic)
 	#print 'InternetIP : ', len(region_dic)
 	#print 'Cache types:', cache_type_dic
-	sorted_region_ip_list = sorted(region_ip_dic.items(), key=lambda x:x[1][0], reverse=True)[:100]
+
+        #start get ip source
+
+
+
+
+
+	sorted_region_ip_list = sorted(region_ip_dic.items(), key=lambda x:x[1][0])[:20]
 	for i in sorted_region_ip_list:
 		#get all regions
-		url = 'http://ip.taobao.com/service/getIpInfo.php?ip=%s' % i[1][1] 
-		p=threading.Thread(target=get_ip_source.get_region, args=(url,) )
-		p.start()
+                #print i
+                if "%20" in i[1][1]:
+                    i = i[1][1].split('%20')[1]
+                else:
+                    i = i[1][1]
+                #print i[1][1] 
+                #print i
+                url = 'http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=json&ip=%s' % i
+                get_region(url)
+                time.sleep(0.15)
+        #print province_dic
+
+
+		#p=threading.Thread(target=get_region, args=(url,) )
+                #threads.append(p)
+		#p.start()
 
 	result_dic = {
 		'ip_hour_dic' : ip_hour_dic,
 		'cache_type_dic': cache_type_dic,
-                'province_dic': get_ip_source.province_dic
+                'province_dic': province_dic
 	}
 
-        print result_dic['province_dic']
-	return result_dic
-
-
-
+        #print result_dic['province_dic']
 
 if __name__ == '__main__':
 	result = handle('log25w.log')			
