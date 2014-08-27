@@ -11,3 +11,7 @@ url = 'http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=json&ip=58.198.
 result = urllib2.urlopen(url)
 json_result = json.loads(result.read())
 print json_result
+
+def iptest():
+    """docstring for iptest"""
+    print "hello"

@@ -12,5 +12,5 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     (r'^$', index ),
-	(r'^get_squid_log/$', get_squid_log)
+    (r'^get_squid_log/$', get_squid_log)
 )
