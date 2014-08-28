@@ -34,10 +34,17 @@ def testgeoip():
     print response.country.name,response.subdivisions.most_specific.name,response.city.name
     reader.close()
 
-import os,linecache
+import os,sys,linecache
+ct = 0
 def IPSearch(ip_add):
+    global ct
     """docstring for BSearch"""
-    ip_key = struct.unpack("!I",socket.inet_aton(ip_add))[0]
+    #print ip_add
+    try:
+        ip_key = struct.unpack("!I",socket.inet_aton(ip_add))[0]
+    except:
+        sys.exit()
+
     file_name = "ipv2.txt"
     low = 0
     ip_file = open(file_name,'r')
@@ -51,6 +58,9 @@ def IPSearch(ip_add):
         if ip_key >= int(line_items[0]) and ip_key <= int(line_items[1]):
             #print line_items[3].encode('gb2312'),line_items[4].encode('gb2312')
             #print line_items,ip_key
+            ct += 1
+            sys.stdout.flush()
+            sys.stdout.write('%d done \r' %(ct))
             return line_items
         else:
             if ip_key < int(line_items[0]):
