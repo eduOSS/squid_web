@@ -29,8 +29,9 @@ def raw_decrease_ip_list(ip_list):
         else :
             ip_dic[i] = 1
     #decreased_ip_list = sorted(ip_dic.items(), key=lambda x:x[1])[:100]
-    for i in ip_dic.items:
-        decreased_ip_list.append(i)
+    for k,v in ip_dic.items():
+        temp = [k,v]
+        decreased_ip_list.append(temp)
     return decreased_ip_list
 
 def get_ip_list_from_log(logfile):
@@ -67,7 +68,7 @@ def get_province_list(ip_list):
     return sorted_province_list
 
 def write_to_excel(province_list):
-    f = csv.writer(open("raw_test.csv","wb+"))
+    f = csv.writer(open("region_test.csv","wb+"))
     f.writerow(["province","click"])
     for i in province_list:
         #i[0] = i[0].encode('gb2312')
@@ -76,8 +77,8 @@ def write_to_excel(province_list):
 if __name__ == '__main__':
     ip_list = get_ip_list_from_log('log25w.log')
     print 'total ip number: ',len(ip_list)
-    #decreased_ip_list = get_region_ip_list(ip_list)
-    decreased_ip_list = raw_decrease_ip_list(ip_list)
+    decreased_ip_list = get_region_ip_list(ip_list)
+    #decreased_ip_list = raw_decrease_ip_list(ip_list)
     print 'choose ',len(decreased_ip_list),'ip to search ip'
     province_list = get_province_list(decreased_ip_list)
     print 'related province number: ',len(province_list)
