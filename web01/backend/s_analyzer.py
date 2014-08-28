@@ -1,6 +1,7 @@
 #coding=utf-8
 import json,urllib2,csv,sys
 import time
+import ipsearch
 
 province_dic = {}
 
@@ -8,7 +9,7 @@ def get_region(url):
     result = urllib2.urlopen(url)
     region_dic = json.loads(result.read())
     global province_dic
-    province = region_dic['province']
+    province = region_dic['city']
     if province_dic.has_key(province):
         province_dic[province] +=1
     else:
