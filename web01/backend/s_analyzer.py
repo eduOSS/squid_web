@@ -3,24 +3,28 @@ import json,urllib2,csv,sys,os
 import time
 import ipsearch
 
-
 def get_region_ip_list(ip_list):
     """docstring for alex_method"""
     region_ip_dic = {}
     region_ip_list = []
+    related_ip_number = 0
     for i in ip_list:
         region_ip = '.'.join(i.split('.')[:2])
         if region_ip_dic.has_key(region_ip):
             region_ip_dic[region_ip][1] += 1
         else :
             region_ip_dic[region_ip] = [i,1]
-    sorted_region_ip_list = sorted(region_ip_dic.items(), key=lambda x:x[1][1])[:100]
+    print "length of region ip dic",len(region_ip_dic)
+    sorted_region_ip_list = sorted(region_ip_dic.items(), key=lambda x:x[1][1],reverse = True)[:100]
     for j in sorted_region_ip_list:
         region_ip_list.append(j[1])
+        related_ip_number += j[1][1]
+    print 'related ip number: ',related_ip_number
     return region_ip_list
 
 def raw_decrease_ip_list(ip_list):
     """docstring for alex_method"""
+    related_ip_number = 0
     ip_dic = {}
     decreased_ip_list = []
     for i in ip_list:
@@ -32,6 +36,8 @@ def raw_decrease_ip_list(ip_list):
     for k,v in ip_dic.items():
         temp = [k,v]
         decreased_ip_list.append(temp)
+        related_ip_number += v
+    print 'related ip number: ',related_ip_number
     return decreased_ip_list
 
 def get_ip_list_from_log(logfile):
@@ -74,7 +80,8 @@ def write_to_excel(province_list):
         #i[0] = i[0].encode('gb2312')
         f.writerow([i[0],i[1]])
 
-if __name__ == '__main__':
+def main():
+    """docstring for main"""
     ip_list = get_ip_list_from_log('log25w.log')
     print 'total ip number: ',len(ip_list)
     decreased_ip_list = get_region_ip_list(ip_list)
@@ -84,3 +91,6 @@ if __name__ == '__main__':
     print 'related province number: ',len(province_list)
     write_to_excel(province_list)
     print 'have writen to excel'
+
+if __name__ == '__main__':
+    main()
